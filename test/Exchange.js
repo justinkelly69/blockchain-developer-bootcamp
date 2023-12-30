@@ -4,7 +4,7 @@ const { ethers } = require('hardhat')
 const tokens = (n) => ethers.utils.parseUnits(n.toString(), 'ether')
 
 describe('Exchange', () => {
-    let accounts, deployer, feeAccount, exchange, token1, token2, user1
+    let accounts, deployer, feeAccount, exchange, token1, token2, user1, user2
 
     const feePercent = 10;
 
@@ -16,6 +16,7 @@ describe('Exchange', () => {
         deployer = accounts[0]
         feeAccount = accounts[1]
         user1 = accounts[2]
+        user2 = accounts[3]
 
         token1 = await Token.deploy('Dapp University', 'DAPP', '1000000');
         token2 = await Token.deploy('Padd University', 'PADD', '1000000');
@@ -73,8 +74,6 @@ describe('Exchange', () => {
 
             it('fails when no tokens are approved', async () => {
                 await expect(exchange.connect(user1).depositToken(token1.address, amount)).to.be.reverted
-                //await expect(token.connect(exchange).transferFrom(deployer.address, receiver.address, invalidAmount)).to.be.reverted
-
             })
         })
     })
@@ -179,6 +178,74 @@ describe('Exchange', () => {
         describe('Failure', async () => {
             it('rejects with no balance', async () => {
                 await expect(exchange.connect(user1).makeOrder(token2.address, tokens(1), token1.address, tokens(1))).to.be.rejected
+            })
+        })
+    })
+
+    describe('Order Actions', () => {
+        let transaction, result
+        let amount = tokens(1)
+
+        beforeEach(async () => {
+            transaction = await token1.connect(user1).approve(exchange.address, amount)
+            result = await transaction.wait()
+
+            transaction = await exchange.connect(user1).depositToken(token1.address, amount)
+            result = await transaction.wait()
+
+            transaction = await exchange.connect(user1).makeOrder(token2.address, amount, token1.address, amount)
+            result = await transaction.wait()
+        })
+
+        describe('Cancelling Orders', () => {
+
+            describe('Success', async () => {
+
+                beforeEach(async () => {
+                    transaction = await exchange.connect(user1).cancelOrder(1)
+                    result = await transaction.wait()
+                })
+
+                it('updates cancelled orders', async () => {
+                    expect(await exchange.ordersCancelled(1)).to.equal(true)
+                })
+
+                it('emits a Cancel event', async () => {
+                    const event = result.events[0]
+                    expect(event.event).to.equal('Cancel')
+    
+                    const args = event.args
+                    expect(args.id).to.equal(1)
+                    expect(args.user).to.equal(user1.address)
+                    expect(args.tokenGet).to.equal(token2.address)
+                    expect(args.amountGet).to.equal(tokens(1))
+                    expect(args.tokenGive).to.equal(token1.address)
+                    expect(args.amountGive).to.equal(tokens(1))
+                    expect(args.timestamp).to.at.least(1)
+                })
+            })
+
+            describe('Failure', async () => {
+
+                beforeEach(async () => {
+                    transaction = await token1.connect(user1).approve(exchange.address, amount)
+                    result = await transaction.wait()
+        
+                    transaction = await exchange.connect(user1).depositToken(token1.address, amount)
+                    result = await transaction.wait()
+        
+                    transaction = await exchange.connect(user1).makeOrder(token2.address, amount, token1.address, amount)
+                    result = await transaction.wait()
+                })
+
+                it('rejects invalid order.ids', async () => {
+                    const invalidId = 99999
+                    await expect(exchange.connect(user1).cancelOrder(invalidId)).to.be.reverted
+                })
+
+                it('rejects unauthorised cancellations', async () => {
+                    await expect(exchange.connect(user2).cancelOrder(1)).to.be.reverted
+                })
             })
         })
     })
