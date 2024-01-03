@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { deployExchange, deployToken } = require('./utils.js')
+const { getAccounts, deployExchange, deployToken } = require('./utils.js')
 
 async function main() {
   const {chainId} = await ethers.provider.getNetwork()
@@ -14,9 +14,11 @@ async function main() {
   }
   console.log(JSON.stringify(configData, null, 4))
 
-  const accounts = await ethers.getSigners()
-  console.log(`Accounts fetched: ${accounts[0].address}, ${accounts[1].address}\n`)
-
+  const accounts = await getAccounts()
+  for(let account in accounts) {
+    console.log(`${account} fetched: ${accounts[account].address}`)
+  }
+  
   const dapp = await deployToken(Token, 'DAPP University', 'DAPP', '1000000') 
   configData[chainId]['DAPP'] = {'address': dapp.address}
 

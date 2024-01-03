@@ -7,6 +7,11 @@ exports.wait = seconds => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 
+exports.getAccounts = async () => {
+    const accounts = await ethers.getSigners()
+    return accounts
+}
+
 exports.deployExchange = async (exchange, address, feePercent) => {
     const excg = await exchange.deploy(address, feePercent)
     await excg.deployed()
