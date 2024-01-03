@@ -1,4 +1,5 @@
 const fs = require('fs')
+const { deployExchange, deployToken } = require('./utils.js')
 
 async function main() {
   const {chainId} = await ethers.provider.getNetwork()
@@ -16,24 +17,16 @@ async function main() {
   const accounts = await ethers.getSigners()
   console.log(`Accounts fetched: ${accounts[0].address}, ${accounts[1].address}\n`)
 
-  const dapp = await Token.deploy('DAPP University', 'DAPP', '1000000')
-  await dapp.deployed()
-  console.log(`DAPP deployed to: ${dapp.address}`)
+  const dapp = await deployToken(Token, 'DAPP University', 'DAPP', '1000000') 
   configData[chainId]['DAPP'] = {'address': dapp.address}
 
-  const meth = await Token.deploy('mETH', 'mETH', '1000000')
-  await meth.deployed()
-  console.log(`mETH deployed to: ${meth.address}`)
+  const meth = await deployToken(Token, 'mETH', 'mETH', '1000000')
   configData[chainId]['mETH'] = {'address': meth.address}
 
-  const mdai = await Token.deploy('mDAI', 'mDAI', '1000000')
-  await mdai.deployed()
-  console.log(`mDAI deployed to: ${mdai.address}`)
+  const mdai = await deployToken(Token, 'mDAI', 'mDAI', '1000000')
   configData[chainId]['mDAI'] = {'address': mdai.address}
 
-  const exchange = await Exchange.deploy(accounts[1].address, 10)
-  await exchange.deployed()
-  console.log(`Exchange deployed to: ${exchange.address}`)
+  const exchange = await deployExchange(Exchange, accounts[1].address, 10)
   configData[chainId]['exchange'] = {'address': exchange.address}
 
   const configStr = JSON.stringify(configData, null, 4)
@@ -41,7 +34,6 @@ async function main() {
 
   try {
     fs.writeFileSync('./tmp/config.json', configStr);
-    // file written successfully
   } catch (err) {
     console.error(err);
   }

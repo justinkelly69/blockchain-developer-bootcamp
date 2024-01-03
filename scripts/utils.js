@@ -7,6 +7,20 @@ exports.wait = seconds => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 
+exports.deployExchange = async (exchange, address, feePercent) => {
+    const excg = await exchange.deploy(address, feePercent)
+    await excg.deployed()
+    console.log(`Exchange deployed to: ${excg.address}`)
+    return excg
+}
+
+exports.deployToken = async (token, name, abbr, maxTokens) => {
+    const tkn = await token.deploy(name, abbr, maxTokens)
+    await tkn.deployed()
+    console.log(`${name} deployed to: ${tkn.address}`)
+    return tkn
+}
+
 exports.fetchContract = async (name, address) => {
     const token = await ethers.getContractAt(name, address)
     console.log(`${name} fetched ${address}\n`)
