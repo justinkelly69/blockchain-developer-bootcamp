@@ -1,12 +1,15 @@
 import React, { useEffect } from "react"
 import { ethers } from "ethers"
 import config from "../tmp/config.json"
-import abi from "../tmp/Token.json"
+import Token_abi from "../tmp/Token_abi.json"
+//import Exchange_abi from "../tmp/Exchange_abi.json"
+
 import "../App.css"
 
 function App() {
 
   const loadBlockchainData = async () => {
+
     const accounts = await window.ethereum.request({
       method: "eth_requestAccounts"
     })
@@ -17,7 +20,7 @@ function App() {
     console.log('chainId=', chainId)
 
     const address = config[chainId]['DAPP'].address
-    const token = new ethers.Contract(address, abi, provider)
+    const token = new ethers.Contract(address, Token_abi, provider)
     console.log('address=', token.address)
 
     console.log('token=', token)

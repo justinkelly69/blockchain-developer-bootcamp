@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { getAccounts, deployExchange, deployToken } = require('./utils.js')
+const { getAccounts, deployExchange, deployToken, writeJSONFile } = require('./utils.js')
 
 async function main() {
   const {chainId} = await ethers.provider.getNetwork()
@@ -30,15 +30,13 @@ async function main() {
 
   const exchange = await deployExchange(Exchange, accounts[1].address, 10)
   configData[chainId]['exchange'] = {'address': exchange.address}
+  writeJSONFile('./src/tmp/config.json', configData)
 
-  const configStr = JSON.stringify(configData, null, 4)
-  console.log(configStr)
+  const Token_abi = require('../artifacts/contracts/Token.sol/Token.json').abi
+  writeJSONFile('./src/tmp/Token_abi.json', Token_abi)
 
-  try {
-    fs.writeFileSync('./src/tmp/config.json', configStr);
-  } catch (err) {
-    console.error(err);
-  }
+  const Exchange_abi = require('../artifacts/contracts/Exchange.sol/Exchange.json').abi
+  writeJSONFile('./src/tmp/Exchange_abi.json', Exchange_abi)
 }
 
 // We recommend this pattern to be able to use async/await everywhere

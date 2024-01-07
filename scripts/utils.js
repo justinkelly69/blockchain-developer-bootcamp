@@ -1,6 +1,15 @@
+const fs = require('fs')
 const { ethers } = require("hardhat")
 
 exports.tokens = (n) => ethers.utils.parseUnits(n.toString(), 'ether')
+
+exports.writeJSONFile = (fileName, fileData) => {
+    try {
+        fs.writeFileSync(fileName, JSON.stringify(fileData, null, 4));
+    } catch (err) {
+        console.error(err);
+    }
+}
 
 exports.wait = seconds => {
     const milliseconds = seconds * 100
