@@ -7,7 +7,7 @@ const { tokens, wait, fetchContract, makeTransaction, approveTransaction, deposi
 async function main() {
   const accounts = await ethers.getSigners()
   const { chainId } = await ethers.provider.getNetwork()
-  const config = require('../tmp/config.json')
+  const config = require('../src/tmp/config.json')
   
   const DAPP = await fetchContract('Token', config[chainId]["DAPP"]["address"])
   const mETH = await fetchContract('Token', config[chainId]["mETH"]["address"])

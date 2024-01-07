@@ -35,7 +35,7 @@ async function main() {
   console.log(configStr)
 
   try {
-    fs.writeFileSync('./tmp/config.json', configStr);
+    fs.writeFileSync('./src/tmp/config.json', configStr);
   } catch (err) {
     console.error(err);
   }
