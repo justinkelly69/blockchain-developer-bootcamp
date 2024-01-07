@@ -1,0 +1,8 @@
+const types = {
+    PROVIDER_LOADED: 'PROVIDER_LOADED',
+    NETWORK_LOADED: 'NETWORK_LOADED',
+    ACCOUNT_LOADED: 'ACCOUNT_LOADED',
+    TOKEN_LOADED: 'TOKEN_LOADED',
+}
+
+export default types
