@@ -1,13 +1,16 @@
 import React, { useEffect } from "react"
 import { useDispatch } from "react-redux"
 import config from "../tmp/config.json"
-import { 
-  loadProvider, 
-  loadNetwork, 
-  loadAccount, 
+import {
+  loadProvider,
+  loadNetwork,
+  loadAccount,
   loadTokens,
   loadExchange
 } from "../store/interactions"
+
+import Navbar from "./Navbar"
+import Markets from "./Markets"
 
 function App() {
 
@@ -21,13 +24,20 @@ function App() {
     // Fetch current network's chainId (hardhat: 31337, kovan: 42)
     const chainId = await loadNetwork(provider, dispatch)
 
-    // Fetch current account and balance from MetaMask
-    await loadAccount(provider, dispatch)
+    window.ethereum.on('chainChanged', () => {
+      window.location.reload()
+    })
 
+    // Fetch current account and balance from MetaMask
+    window.ethereum.on('accountsChanged', () => {
+      loadAccount(provider, dispatch)
+    })
+
+    
     // Load tokens smart contracts
-    const DAPP = config[chainId].DAPP
+    const DApp = config[chainId].DApp
     const mETH = config[chainId].mETH
-    await loadTokens(provider, [DAPP.address, mETH.address], dispatch)
+    await loadTokens(provider, [DApp.address, mETH.address], dispatch)
 
     // Load exchange contract
     const exchange = config[chainId].exchange
@@ -41,12 +51,12 @@ function App() {
   return (
     <div>
 
-      {/* Navbar */}
+      <Navbar />
 
       <main className='exchange grid'>
         <section className='exchange__section--left grid'>
 
-          {/* Markets */}
+          <Markets />
 
           {/* Balance */}
 

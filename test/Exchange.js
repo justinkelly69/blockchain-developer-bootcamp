@@ -18,8 +18,8 @@ describe('Exchange', () => {
         user1 = accounts[2]
         user2 = accounts[3]
 
-        token1 = await Token.deploy('Dapp University', 'DAPP', '1000000');
-        token2 = await Token.deploy('Padd University', 'PADD', '1000000');
+        token1 = await Token.deploy('Dapp University', 'DApp', '1000000');
+        token2 = await Token.deploy('Padd University', 'PAdd', '1000000');
 
         let transaction = await token1.connect(deployer).transfer(user1.address, tokens(100))
         await transaction.wait()

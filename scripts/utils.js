@@ -47,7 +47,6 @@ exports.makeTransaction = async (token, sender, receiver, amount) => {
     console.log(`Transferred ${amount} ${name} from ${sender.address} to ${receiver.address}\n`)
 }
 
-// transaction = await mETH.connect(user2).approve(Exchange_address, amount)
 exports.approveTransaction = async (token, user, exchange, amount) => {
     const transaction = await token.connect(user).approve(exchange.address, amount)
     await transaction.wait()
@@ -55,14 +54,12 @@ exports.approveTransaction = async (token, user, exchange, amount) => {
     console.log(`Approved ${amount} ${name} from ${user.address}\n`)
 }
 
-// transaction = await exchange.connect(user1).depositToken(DAPP_address, amount)
 exports.depositToken = async (exchange, user, tokens, amount) => {
     const transaction = await exchange.connect(user).depositToken(tokens.address, amount)
     await transaction.wait()
     console.log(`Deposited ${amount}  from ${user.address}\n`)
 }
 
-// transaction = await exchange.connect(user1).makeOrder(mETH_address, tokens(100), DAPP_address, tokens(5))
 exports.makeOrder = async (exchange, user, tokensGive, amountGive, tokensGet, amountGet) => {
     const transaction = await exchange.connect(user).makeOrder(tokensGive.address, amountGive, tokensGet.address, amountGet)
     result = await transaction.wait()
@@ -70,14 +67,12 @@ exports.makeOrder = async (exchange, user, tokensGive, amountGive, tokensGet, am
     return result.events[0].args.id
 }
 
-// transaction = await exchange.connect(user1).cancelOrder(orderId)
 exports.cancelOrder = async (exchange, user, orderId) => {
     const transaction = await exchange.connect(user).cancelOrder(orderId)
     result = await transaction.wait()
     console.log(`Cancelled order from ${user.address}\n`)
 }
 
-// transaction = await exchange.connect(user2).fillOrder(orderId)
 exports.fillOrder = async (exchange, user1, user2, orderId) => {
     transaction = await exchange.connect(user2).fillOrder(orderId)
     result = await transaction.wait()

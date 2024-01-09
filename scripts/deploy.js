@@ -23,8 +23,8 @@ async function deploy() {
         console.log(`${account} fetched: ${accounts[account].address}`)
     }
 
-    const dapp = await deployToken(Token, 'DAPP University', 'DAPP', '1000000')
-    configData[chainId]['DAPP'] = { 'address': dapp.address }
+    const dapp = await deployToken(Token, 'DAPP University', 'DApp', '1000000')
+    configData[chainId]['DApp'] = { 'address': dapp.address }
 
     const meth = await deployToken(Token, 'mETH', 'mETH', '1000000')
     configData[chainId]['mETH'] = { 'address': meth.address }
@@ -48,7 +48,7 @@ async function seed() {
     const { chainId } = await ethers.provider.getNetwork()
     const config = require('../src/tmp/config.json')
 
-    const DAPP = await fetchContract('Token', config[chainId]["DAPP"]["address"])
+    const DApp = await fetchContract('Token', config[chainId]["DApp"]["address"])
     const mETH = await fetchContract('Token', config[chainId]["mETH"]["address"])
     const mDAI = await fetchContract('Token', config[chainId]["mDAI"]["address"])
     const exchange = await fetchContract('Exchange', config[chainId]["exchange"]["address"])
@@ -63,8 +63,8 @@ async function seed() {
     const user1 = accounts[0]
     const user2 = accounts[1]
 
-    await approveTransaction(DAPP, user1, exchange, amount)
-    await depositToken(exchange, user1, DAPP, amount)
+    await approveTransaction(DApp, user1, exchange, amount)
+    await depositToken(exchange, user1, DApp, amount)
     await approveTransaction(mETH, user2, exchange, amount)
     await depositToken(exchange, user2, mETH, amount)
 
@@ -73,22 +73,22 @@ async function seed() {
     /////////////////////////////////////////////////////////////
     // SEED A CANCELLED ORDER
 
-    orderId = await makeOrder(exchange, user1, mETH, tokens(100), DAPP, tokens(5))
+    orderId = await makeOrder(exchange, user1, mETH, tokens(100), DApp, tokens(5))
     await cancelOrder(exchange, user1, orderId)
     await wait(1)
 
     /////////////////////////////////////////////////////////////
     // SEED A FILLED ORDER
 
-    orderId = await makeOrder(exchange, user1, mETH, tokens(100), DAPP, tokens(10))
+    orderId = await makeOrder(exchange, user1, mETH, tokens(100), DApp, tokens(10))
     await fillOrder(exchange, user1, user2, orderId)
     await wait(1)
 
-    orderId = await makeOrder(exchange, user1, mETH, tokens(50), DAPP, tokens(15))
+    orderId = await makeOrder(exchange, user1, mETH, tokens(50), DApp, tokens(15))
     await fillOrder(exchange, user1, user2, orderId)
     await wait(1)
 
-    orderId = await makeOrder(exchange, user1, mETH, tokens(200), DAPP, tokens(20))
+    orderId = await makeOrder(exchange, user1, mETH, tokens(200), DApp, tokens(20))
     await fillOrder(exchange, user1, user2, orderId)
     await wait(1)
 
@@ -96,12 +96,12 @@ async function seed() {
     // SEED OPEN ORDERS
 
     for (let i = 0; i <= 10; i++) {
-        await makeOrder(exchange, user1, mETH, tokens(10 * i), DAPP, tokens(10))
+        await makeOrder(exchange, user1, mETH, tokens(10 * i), DApp, tokens(10))
         await wait(0.1)
     }
 
     for (let i = 0; i <= 10; i++) {
-        await makeOrder(exchange, user2, DAPP, tokens(10), mETH, tokens(10 * i))
+        await makeOrder(exchange, user2, DApp, tokens(10), mETH, tokens(10 * i))
         await wait(0.1)
     }
 

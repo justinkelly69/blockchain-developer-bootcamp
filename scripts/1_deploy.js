@@ -19,8 +19,8 @@ async function main() {
     console.log(`${account} fetched: ${accounts[account].address}`)
   }
   
-  const dapp = await deployToken(Token, 'DAPP University', 'DAPP', '1000000') 
-  configData[chainId]['DAPP'] = {'address': dapp.address}
+  const dapp = await deployToken(Token, 'DAPP University', 'DApp', '1000000') 
+  configData[chainId]['DApp'] = {'address': dapp.address}
 
   const meth = await deployToken(Token, 'mETH', 'mETH', '1000000')
   configData[chainId]['mETH'] = {'address': meth.address}
