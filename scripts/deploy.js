@@ -108,15 +108,15 @@ async function seed() {
 }
 
 deploy()
-    .then(
-        seed()
-            .then(() => process.exit(0))
-            .catch((error) => {
-                console.error(error)
-                process.exit(1)
-            }))
+    .then(() => console.log('deployed'))
     .catch((error) => {
         console.error(error)
         process.exit(1)
     });
 
+seed()
+    .then(() => process.exit(0))
+    .catch((error) => {
+        console.error(error)
+        process.exit(1)
+    })
