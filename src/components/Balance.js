@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux";
 
 import dapp from '../assets/dapp.svg'
+import eth from '../assets/eth.svg'
+
 import { loadProvider, loadBalances, transferTokens } from "../store/interactions";
 
 const Balance = () => {
 
     const [token1TransferAmount, setToken1TransferAmount] = useState(0)
+    const [token2TransferAmount, setToken2TransferAmount] = useState(0)
+    const [isDeposit, setIsDeposit] = useState(true)
 
     const dispatch = useDispatch()
     const provider = loadProvider(dispatch)
@@ -31,7 +35,9 @@ const Balance = () => {
         if (token.address === tokens[0].address) {
             setToken1TransferAmount(e.target.value)
         }
-        console.log(token1TransferAmount)
+        else if (token.address === tokens[1].address) {
+            setToken2TransferAmount(e.target.value)
+        }
     }
 
     const depositHandler = (e, token) => {
@@ -40,6 +46,26 @@ const Balance = () => {
             transferTokens(provider, exchange, "Deposit", token, token1TransferAmount, dispatch)
             setToken1TransferAmount(0)
         }
+        else if (token.address === tokens[1].address) {
+            transferTokens(provider, exchange, "Deposit", token, token2TransferAmount, dispatch)
+            setToken2TransferAmount(0)
+        }
+    }
+
+    const depositRef = useRef(null)
+    const withdrawRef = useRef(null)
+
+    const tabHandler = (e) => {
+        if(e.target.className !== depositRef.current.className) {
+            withdrawRef.current.className = 'tab tab--active'
+            depositRef.current.className = 'tab'
+            setIsDeposit(false)
+        }
+        else {
+            depositRef.current.className = 'tab tab--active'
+            withdrawRef.current.className = 'tab'
+            setIsDeposit(true)
+        }
     }
 
     return (
@@ -47,8 +73,8 @@ const Balance = () => {
             <div className='component__header flex-between'>
                 <h2>Balance</h2>
                 <div className='tabs'>
-                    <button className='tab tab--active'>Deposit</button>
-                    <button className='tab'>Withdraw</button>
+                    <button onClick={(e) => tabHandler(e)} ref={depositRef} className='tab tab--active'>Deposit</button>
+                    <button onClick={(e) => tabHandler(e)} ref={withdrawRef} className='tab'>Withdraw</button>
                 </div>
             </div>
 
@@ -76,9 +102,8 @@ const Balance = () => {
                         placeholder='0.0000'
                         onChange={e => amountHandler(e, tokens[0])}
                     />
-
                     <button className='button' type='submit'>
-                        <span>Deposit</span>
+                        <span>{isDeposit ? 'Deposit' : 'Withdraw'}</span>
                     </button>
                 </form>
             </div>
@@ -89,15 +114,28 @@ const Balance = () => {
 
             <div className='exchange__transfers--form'>
                 <div className='flex-between'>
-
+                    <p><small>Token</small><br /><img src={eth} alt="Token Logo" />
+                        {symbols && symbols[1]}
+                    </p>
+                    <p><small>Wallet</small><br />
+                        {tokenBalances && tokenBalances[1]}
+                    </p>
+                    <p><small>Exchange</small><br />
+                        {exchangeBalances && exchangeBalances[1]}
+                    </p>
                 </div>
 
-                <form>
+                <form  onSubmit={(e) => depositHandler(e, tokens[1])}>
                     <label htmlFor="token1"></label>
-                    <input type="text" id='token1' placeholder='0.0000' />
-
+                    <input
+                        type="text"
+                        id='token1'
+                        value={token2TransferAmount === 0 ? '' : token2TransferAmount}
+                        placeholder='0.0000'
+                        onChange={e => amountHandler(e, tokens[1])}
+                    />
                     <button className='button' type='submit'>
-                        <span></span>
+                        <span>{isDeposit ? 'Deposit' : 'Withdraw'}</span>
                     </button>
                 </form>
             </div>
