@@ -7,8 +7,8 @@ import { loadTokens, loadProvider } from "../store/interactions"
 const Markets = () => {
     const chainId = useSelector(state => state.provider.chainId)
     const dispatch = useDispatch()
-    const provider = loadProvider(dispatch)
-    //const provider = useSelector(state => state.provider.connection)
+    //const provider = loadProvider(dispatch)
+    const provider = useSelector(state => state.provider.connection)
 
     const marketHandler = async (e) => {
         loadTokens(provider, (e.target.value).split(','), dispatch)

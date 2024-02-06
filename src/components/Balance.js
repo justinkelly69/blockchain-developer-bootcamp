@@ -13,8 +13,8 @@ const Balance = () => {
     const [isDeposit, setIsDeposit] = useState(true)
 
     const dispatch = useDispatch()
-    const provider = loadProvider(dispatch)
-    //const provider = useSelector(state => state.provider.connection)
+    //const provider = loadProvider(dispatch)
+    const provider = useSelector(state => state.provider.connection)
 
     const account = useSelector(state => state.provider.account)
     const exchange = useSelector(state => state.exchange.contract)
@@ -57,12 +57,10 @@ const Balance = () => {
         if (token.address === tokens[0].address) {
             transferTokens(provider, exchange, 'Withdraw', token, token1TransferAmount, dispatch)
             setToken1TransferAmount(0)
-            console.log('withdraw token 0')
         }
         else if (token.address === tokens[1].address) {
             transferTokens(provider, exchange, 'Withdraw', token, token2TransferAmount, dispatch)
             setToken2TransferAmount(0)
-            console.log('withdraw token 1')
         }
     }
 
@@ -120,7 +118,11 @@ const Balance = () => {
                         placeholder='0.0000'
                         onChange={e => amountHandler(e, tokens[0])}
                     />
-                    <button className='button' type='submit'>
+                    <button
+                        className='button'
+                        type='submit'
+                        disabled={token1TransferAmount === 0}
+                    >
                         <span>{isDeposit ? 'Deposit' : 'Withdraw'}</span>
                     </button>
                 </form>
@@ -156,7 +158,11 @@ const Balance = () => {
                         placeholder='0.0000'
                         onChange={e => amountHandler(e, tokens[1])}
                     />
-                    <button className='button' type='submit'>
+                    <button
+                        className='button'
+                        type='submit'
+                        disabled={token2TransferAmount === 0}
+                    >
                         <span>{isDeposit ? 'Deposit' : 'Withdraw'}</span>
                     </button>
                 </form>

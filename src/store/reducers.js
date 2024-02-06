@@ -6,7 +6,7 @@ export const provider = (state = {}, action) => {
         case types.PROVIDER_LOADED:
             return {
                 ...state,
-                connection: provider.connection
+                connection: action.connection
             }
 
         case types.NETWORK_LOADED:
@@ -81,6 +81,10 @@ const DEFAULT_EXCHANGE_STATE = {
     transaction: {
         isSuccessful: false
     },
+    allOrders: {
+        loaded: false,
+        data: []
+    },
     events: []
 }
 
@@ -97,6 +101,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
 
         //--------------------------------------------------
         // BALANCE CASES
+
         case types.EXCHANGE_TOKEN_1_BALANCE_LOADED:
             return {
                 ...state,
@@ -111,6 +116,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
 
         //--------------------------------------------------
         // TRANSFER CASES DEPOSITS & WITHDRAWALS
+
         case types.TRANSFER_REQUEST:
             return {
                 ...state,
@@ -145,6 +151,51 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
                     isError: true
                 },
                 transferInProgress: false,
+            }
+
+        //--------------------------------------------------
+        // MAKING ORDERS CASES
+        
+        case types.NEW_ORDER_REQUEST:
+            return {
+                ...state,
+                transaction: {
+                    transactionType: 'New Order',
+                    isPending: true,
+                    isSuccessful: false
+                }
+            }
+
+        case types.NEW_ORDER_FAIL:
+            return {
+                ...state,
+                transaction: {
+                    transactionType: 'New Order',
+                    isPending: false,
+                    isSuccessful: false,
+                    isError: true
+                }
+            }
+
+        case types.NEW_ORDER_SUCCESS:
+
+            const index = state.allOrders.data.findIndex(order => order.id === action.orderId)
+            const data = index === -1 ?
+                [...state.allOrders.data, action.order] :
+                state.allOrders.data
+
+            return {
+                ...state,
+                allOrders: {
+                    ...state.allOrders,
+                    data
+                },
+                transaction: {
+                    transactionType: 'New Order',
+                    isPending: false,
+                    isSuccessful: true,
+                },
+                events: [action.event, ...state.events]
             }
 
         default:

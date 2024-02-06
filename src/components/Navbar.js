@@ -12,8 +12,8 @@ const Navbar = () => {
 
     const dispatch = useDispatch()
 
-    const provider = loadProvider(dispatch)
-    //const provider = useSelector(state => state.provider.connection)
+    //const provider = loadProvider(dispatch)
+    const provider = useSelector(state => state.provider.connection)
     const chainId = useSelector(state => state.provider.chainId)
     const account = useSelector(state => state.provider.account)
     const balance = useSelector(state => state.provider.balance)
@@ -24,7 +24,6 @@ const Navbar = () => {
     }
 
     const networkHandler = async (e) => {
-        //console.log(e.target.value)
         await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
             params: [{ chainId: e.target.value }]
