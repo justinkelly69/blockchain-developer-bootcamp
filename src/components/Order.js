@@ -16,7 +16,6 @@ const Order = () => {
     const exchange = useSelector(state => state.exchange.contract)
     const dispatch = useDispatch()
 
-
     const buyHandler = (e) => {
         e.preventDefault()
         makeBuyOrder(provider, exchange, tokens, { amount, price }, dispatch)
@@ -53,8 +52,6 @@ const Order = () => {
                     <button onClick={tabHandler} ref={sellRef} className='tab'>Sell</button>
                 </div>
             </div>
-
-
 
             <form onSubmit={isBuy ? buyHandler : sellHandler}>
 
@@ -96,6 +93,5 @@ const Order = () => {
         </div>
     );
 }
-
 
 export default Order

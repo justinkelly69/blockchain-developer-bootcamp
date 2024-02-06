@@ -624,6 +624,14 @@ table td {
   pointer-events: none;
 }
 
+.sell-color {
+  color: var(--clr-red)
+}
+
+.buy-color {
+  color: var(--clr-green)
+}
+
 /* ------------------------------------------------------ */
 /* -- Banner -- */
 

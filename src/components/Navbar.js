@@ -4,7 +4,7 @@ import Blockies from "react-blockies"
 import logo from '../assets/logo.png'
 import eth from '../assets/eth.svg'
 import config from '../tmp/config.json'
-import { loadAccount, loadProvider } from "../store/interactions"
+import { loadAccount } from "../store/interactions"
 
 const formatAccount = (account) => `${account.slice(0, 5)}...${account.slice(38, 42)}`
 
@@ -12,12 +12,10 @@ const Navbar = () => {
 
     const dispatch = useDispatch()
 
-    //const provider = loadProvider(dispatch)
     const provider = useSelector(state => state.provider.connection)
     const chainId = useSelector(state => state.provider.chainId)
     const account = useSelector(state => state.provider.account)
     const balance = useSelector(state => state.provider.balance)
-
 
     const connectHandler = async () => {
         await loadAccount(provider, dispatch)

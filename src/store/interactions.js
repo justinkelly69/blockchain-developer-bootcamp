@@ -3,7 +3,6 @@ import types from './types'
 
 import Token_abi from '../tmp/Token_abi.json'
 import Exchange_abi from '../tmp/Exchange_abi.json'
-import { provider } from "./reducers"
 
 export const loadProvider = (dispatch) => {
     const connection = new ethers.providers.Web3Provider(window.ethereum)
@@ -82,6 +81,28 @@ export const loadBalances = async (exchange, tokens, account, dispatch) => {
 
     balance = ethers.utils.formatUnits(await exchange.balanceOf(tokens[1].address, account), 18)
     dispatch({ type: types.EXCHANGE_TOKEN_2_BALANCE_LOADED, balance })
+}
+
+//------------------------------------------------------------------------------
+// LOAD ALL ORDERS
+
+export const loadAllOrders = async (provider, exchange, dispatch) => {
+    const block = await provider.getBlockNumber()
+
+    const cancelStream = await exchange.queryFilter('Cancel', 0, block)
+    const cancelledOrders = cancelStream.map(event => event.args)
+
+    dispatch({type: types.CANCELLED_ORDERS_LOADED, cancelledOrders})
+
+    const tradeStream = await exchange.queryFilter('Trade', 0, block)
+    const filledOrders = tradeStream.map(event => event.args)
+
+    dispatch({type: types.FILLED_ORDERS_LOADED, filledOrders})
+
+    const orderStream = await exchange.queryFilter('Order', 0, block)
+    const allOrders = orderStream.map(event => event.args)
+
+    dispatch({type: types.ALL_ORDERS_LOADED, allOrders})
 }
 
 export const transferTokens = async (provider, exchange, transferType, token, amount, dispatch) => {

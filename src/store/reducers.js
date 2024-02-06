@@ -100,6 +100,36 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
             }
 
         //--------------------------------------------------
+        // ORDERS LOADED (CANCELLED, FILLED & ALL)
+
+        case types.CANCELLED_ORDERS_LOADED:
+            return {
+                ...state,
+                cancelledOrders: {
+                    loaded: true,
+                    data: action.cancelledOrders
+                }
+            }
+
+        case types.FILLED_ORDERS_LOADED:
+            return {
+                ...state,
+                filledOrders: {
+                    loaded: true,
+                    data: action.filledOrders
+                }
+            }
+
+        case types.ALL_ORDERS_LOADED:
+            return {
+                ...state,
+                allOrders: {
+                    loaded: true,
+                    data: action.allOrders
+                }
+            }
+
+        //--------------------------------------------------
         // BALANCE CASES
 
         case types.EXCHANGE_TOKEN_1_BALANCE_LOADED:
@@ -155,7 +185,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
 
         //--------------------------------------------------
         // MAKING ORDERS CASES
-        
+
         case types.NEW_ORDER_REQUEST:
             return {
                 ...state,
@@ -179,7 +209,10 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
 
         case types.NEW_ORDER_SUCCESS:
 
-            const index = state.allOrders.data.findIndex(order => order.id === action.orderId)
+            const index = state.allOrders.data.findIndex(
+                order => order.id === action.orderId
+            )
+
             const data = index === -1 ?
                 [...state.allOrders.data, action.order] :
                 state.allOrders.data

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import dapp from '../assets/dapp.svg'
 import eth from '../assets/eth.svg'
 
-import { loadProvider, loadBalances, transferTokens } from "../store/interactions";
+import { loadBalances, transferTokens } from "../store/interactions";
 
 const Balance = () => {
 
@@ -13,7 +13,6 @@ const Balance = () => {
     const [isDeposit, setIsDeposit] = useState(true)
 
     const dispatch = useDispatch()
-    //const provider = loadProvider(dispatch)
     const provider = useSelector(state => state.provider.connection)
 
     const account = useSelector(state => state.provider.account)

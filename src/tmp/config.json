@@ -1,16 +1,16 @@
 {
     "31337": {
         "DApp": {
-            "address": "0xA4899D35897033b927acFCf422bc745916139776"
+            "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
         },
         "mETH": {
-            "address": "0xf953b3A269d80e3eB0F2947630Da976B896A8C5b"
+            "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
         },
         "mDAI": {
-            "address": "0xAA292E8611aDF267e563f334Ee42320aC96D0463"
+            "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
         },
         "exchange": {
-            "address": "0x5c74c94173F05dA1720953407cbb920F3DF9f887"
+            "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9"
         }
     }
 }
