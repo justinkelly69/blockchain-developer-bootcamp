@@ -88,6 +88,9 @@ const DEFAULT_EXCHANGE_STATE = {
     cancelledOrders: {
         data: []
     },
+    filledOrders: {
+        data: []
+    },
     events: []
 }
 
@@ -136,7 +139,6 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
         // CANCEL ORDERS
 
         case types.ORDER_CANCEL_REQUEST:
-            console.log('ORDER_CANCEL_REQUEST')
             return {
                 ...state,
                 transaction: {
@@ -147,7 +149,6 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
             }
 
         case types.ORDER_CANCEL_SUCCESS:
-            console.log('ORDER_CANCEL_SUCCESS')
             return {
                 ...state,
                 transaction: {
@@ -166,11 +167,55 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
             }
 
         case types.ORDER_CANCEL_FAIL:
-            console.log('ORDER_CANCEL_FAIL')
             return {
                 ...state,
                 transaction: {
                     transactionType: 'Cancel',
+                    isPending: false,
+                    isSuccessful: false,
+                    isError: true
+                }
+            }
+
+        //--------------------------------------------------
+        // FILLING ORDERS
+
+        case types.ORDER_FILL_REQUEST:
+            return {
+                ...state,
+                transaction: {
+                    transactionType: 'Fill Order',
+                    isPending: true,
+                    isSuccessful: false
+                }
+            }
+
+        case types.ORDER_FILL_SUCCESS:
+            const orderFillIndex = state.filledOrders.data.findIndex(
+                order => order.id.toString() === action.order.id.toString()
+            )
+
+            return {
+                ...state,
+                transaction: {
+                    transactionType: 'Fill Order',
+                    isPending: false,
+                    isSuccessful: true
+                },
+                filledOrders: {
+                    ...state.filledOrders,
+                    data: orderFillIndex === -1 ?
+                        [...state.filledOrders.data, action.order] :
+                        state.filledOrders.data
+                },
+                events: [action.event, ...state.events]
+            }
+
+        case types.ORDER_FILL_FAIL:
+            return {
+                ...state,
+                transaction: {
+                    transactionType: 'Fill Order',
                     isPending: false,
                     isSuccessful: false,
                     isError: true
@@ -218,7 +263,6 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
                 events: [action.event, ...state.events],
             }
 
-
         case types.TRANSFER_FAIL:
             return {
                 ...state,
@@ -256,20 +300,17 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
             }
 
         case types.NEW_ORDER_SUCCESS:
-
-            const index = state.allOrders.data.findIndex(
+            const newOrderIndex = state.allOrders.data.findIndex(
                 order => order.id === action.orderId
             )
-
-            const data = index === -1 ?
-                [...state.allOrders.data, action.order] :
-                state.allOrders.data
 
             return {
                 ...state,
                 allOrders: {
                     ...state.allOrders,
-                    data
+                    data: newOrderIndex === -1 ?
+                        [...state.allOrders.data, action.order] :
+                        state.allOrders.data
                 },
                 transaction: {
                     transactionType: 'New Order',
