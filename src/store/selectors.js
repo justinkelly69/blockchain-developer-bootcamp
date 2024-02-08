@@ -55,7 +55,7 @@ const decorateMyOpenOrders = (orders, tokens) => {
 }
 
 const decorateMyOpenOrder = (order, tokens) => {
-    let orderType = order.tokenGive === tokens[1].address ? 'buy' : 'sell'
+    const orderType = order.tokenGive === tokens[1].address ? 'buy' : 'sell'
 
     return ({
         ...order,
@@ -110,6 +110,54 @@ export const filledOrdersSelector = createSelector(
         return orders
     }
 )
+
+//------------------------------------------------------------------------------
+// My FILLED ORDERS
+
+export const myFilledOrdersSelector = createSelector(
+    account,
+    tokens,
+    filledOrders,
+    (account, tokens, orders) => {
+        if (!tokens[0] || !tokens[1] || orders.length === 0) { return }
+
+        orders = orders.filter((o) => o.user === account || o.creator === account)
+        orders = orders.filter(o => o.tokenGet === tokens[0].address || o.tokenGet === tokens[1].address)
+        orders = orders.filter(o => o.tokenGive === tokens[0].address || o.tokenGive === tokens[1].address)
+        orders = orders.sort((a, b) => b.timestamp - a.timestamp)
+        orders = decorateMyFilledOrders(orders, account, tokens)
+
+        return orders
+    }
+)
+
+const decorateMyFilledOrders = (orders, account, tokens) => {
+    return (
+        orders.map(order => {
+            order = decorateOrder(order, tokens)
+            order = decorateMyFilledOrder(order, account, tokens)
+            return order
+        })
+    )
+}
+
+const decorateMyFilledOrder = (order, account, tokens) => {
+    const myOrder = order.creator === account
+    let orderType
+
+    if (myOrder) {
+        orderType = order.tokenGive === tokens[1].address ? 'buy' : 'sell'
+    } else {
+        orderType = order.tokenGive === tokens[1].address ? 'sell' : 'buy'
+    }
+
+    return ({
+        ...order,
+        orderType,
+        orderClass: (orderType === 'buy' ? 'buy-color' : 'sell-color'),
+        orderSign: (orderType === 'buy' ? '+' : '-'),
+    })
+}
 
 const decorateFilledOrders = (orders, tokens) => {
     let previousOrder = orders[0]
