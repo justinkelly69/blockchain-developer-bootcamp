@@ -632,6 +632,14 @@ table td {
   color: var(--clr-green)
 }
 
+.red-text {
+  color: var(--clr-red)
+}
+
+.green-text {
+  color: var(--clr-green)
+}
+
 /* ------------------------------------------------------ */
 /* -- Banner -- */
 
