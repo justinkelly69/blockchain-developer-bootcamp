@@ -3,6 +3,7 @@ import { get, groupBy, reject, minBy, maxBy } from "lodash"
 import { ethers } from "ethers"
 import moment from "moment"
 
+const account = state => get(state, 'provider.account')
 const tokens = state => get(state, 'tokens.contracts')
 const allOrders = state => get(state, 'exchange.allOrders.data', [])
 const cancelledOrders = state => get(state, 'exchange.cancelledOrders.data', [])
@@ -21,6 +22,46 @@ const openOrders = state => {
     })
 
     return _openOrders
+}
+
+//------------------------------------------------------------------------------
+// ALL FILLED ORDERS
+
+export const myOpenOrdersSelector = createSelector(
+    account,
+    tokens,
+    openOrders,
+    (account, tokens, orders) => {
+        if (!tokens[0] || !tokens[1] || orders.length === 0) { return }
+
+        orders = orders.filter((o) => o.user === account)
+        orders = orders.filter(o => o.tokenGet === tokens[0].address || o.tokenGet === tokens[1].address)
+        orders = orders.filter(o => o.tokenGive === tokens[0].address || o.tokenGive === tokens[1].address)
+        orders = decorateMyOpenOrders(orders, tokens)
+        orders = orders.sort((a, b) => b.timestamp - a.timestamp)
+
+        return orders
+    }
+)
+
+const decorateMyOpenOrders = (orders, tokens) => {
+    return (
+        orders.map(order => {
+            order = decorateOrder(order, tokens)
+            order = decorateMyOpenOrder(order, tokens)
+            return order
+        })
+    )
+}
+
+const decorateMyOpenOrder = (order, tokens) => {
+    let orderType = order.tokenGive === tokens[1].address ? 'buy' : 'sell'
+
+    return ({
+        ...order,
+        orderType,
+        orderTypeClass: orderType === 'buy' ? 'green-text' : 'red-text'
+    })
 }
 
 const decorateOrder = (order, tokens) => {
@@ -46,7 +87,6 @@ const decorateOrder = (order, tokens) => {
     })
 }
 
-
 //------------------------------------------------------------------------------
 // ALL FILLED ORDERS
 
@@ -69,7 +109,6 @@ export const filledOrdersSelector = createSelector(
 
         return orders
     }
-
 )
 
 const decorateFilledOrders = (orders, tokens) => {
@@ -147,13 +186,7 @@ export const priceChartSelector = createSelector(
     filledOrders,
     tokens,
     (orders, tokens) => {
-        if (!tokens[0] || !tokens[1] || orders.length === 0) {
-            return ({
-                series: [{
-                    data: []
-                }]
-            })
-        }
+        if (!tokens[0] || !tokens[1] || orders.length === 0) { return }
 
         orders = orders.filter((o) => o.tokenGet === tokens[0].address || o.tokenGet === tokens[1].address)
         orders = orders.filter((o) => o.tokenGive === tokens[0].address || o.tokenGive === tokens[1].address)
