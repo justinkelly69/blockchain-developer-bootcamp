@@ -11,17 +11,16 @@ const filledOrders = state => get(state, 'exchange.filledOrders.data', [])
 
 const openOrders = state => {
     const all = allOrders(state)
-    const cancelled = cancelledOrders(state)
     const filled = filledOrders(state)
+    const cancelled = cancelledOrders(state)
 
-    const _openOrders = reject(all, (order) => {
+    const openOrders = reject(all, (order) => {
         const orderFilled = filled.some((o) => o.id.toString() === order.id.toString())
         const orderCancelled = cancelled.some((o) => o.id.toString() === order.id.toString())
-
         return (orderFilled || orderCancelled)
     })
 
-    return _openOrders
+    return openOrders
 }
 
 //------------------------------------------------------------------------------
@@ -207,7 +206,7 @@ export const orderBookSelector = createSelector(
     openOrders,
     tokens,
     (orders, tokens) => {
-        if (!tokens[0] || !tokens[1]) { return }
+        if (!tokens[0] || !tokens[1] || orders.length === 0) { return }
 
         orders = orders.filter(o => o.tokenGet === tokens[0].address || o.tokenGet === tokens[1].address)
         orders = orders.filter(o => o.tokenGive === tokens[0].address || o.tokenGive === tokens[1].address)
